@@ -22,7 +22,7 @@ namespace Tutorial_API.Repository{
         }
 
          //implementation of get Tutorialial by id using the DB Context
-        public Tutorial GetTutorialById(int id){
+        public Tutorial GetTutorialById(Guid id){
             return _context.Tutorials.FirstOrDefault(p => p.Id == id);
         }
 

@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-
+using System;
 namespace Tutorial_API.Models
 {
     public class Tutorial{
 
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string HowTo { get; set; }

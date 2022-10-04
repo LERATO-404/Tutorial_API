@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using System;
 namespace Tutorial_API.Dtos
 {
     public class TutorialReadDto{
 
         //[Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         //[Required]
         public string HowTo { get; set; }
@@ -26,7 +27,7 @@ namespace Tutorial_API.Dtos
             
         }
 
-        public TutorialReadDto(int _id, string _howTo, string _line){
+        public TutorialReadDto(Guid _id, string _howTo, string _line){
             Id = _id;
             HowTo = _howTo;
             Line = _line;

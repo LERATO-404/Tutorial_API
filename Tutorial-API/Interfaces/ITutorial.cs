@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Tutorial_API.Models;
+using System;
 
 namespace Tutorial_API.Interfaces{
 
@@ -12,7 +13,7 @@ namespace Tutorial_API.Interfaces{
         IEnumerable<Tutorial> GetAllTutorials();
         
         //get resource by Id
-        Tutorial GetTutorialById(int id);
+        Tutorial GetTutorialById(Guid id);
 
         //create a Tutorialial
         void CreateTutorial(Tutorial tutorial);

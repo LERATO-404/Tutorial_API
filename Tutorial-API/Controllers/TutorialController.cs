@@ -46,7 +46,7 @@ namespace Tutorial_API.Controllers{
         //Get - read a single resource & Success = 200 & Failure = 400 (Bad)/404 (Not found)
         //[Route("api/tutorials/{id}")]
         [HttpGet("{id}")]
-        public ActionResult <Tutorial> GetTutorialById(int id){
+        public ActionResult <Tutorial> GetTutorialById(Guid id){
             var tutorialItem = _tutorialRepository.GetTutorialById(id);
             if(tutorialItem != null){
                 return Ok(tutorialItem);
@@ -67,7 +67,7 @@ namespace Tutorial_API.Controllers{
 
         //Get /api/tutorials/dto/{id}
         [HttpGet("dto/{id}", Name ="GetTutorialByIdDto")]
-        public ActionResult <TutorialReadDto> GetTutorialByIdDto(int id){
+        public ActionResult <TutorialReadDto> GetTutorialByIdDto(Guid id){
             var tutorialItem = _tutorialRepository.GetTutorialById(id);
             if(tutorialItem != null){
                 return Ok(_mapper.Map<TutorialReadDto>(tutorialItem));
@@ -107,7 +107,7 @@ namespace Tutorial_API.Controllers{
         //Update - need to supply the entire object, inefficent (error prone)
         //PUT -"api/tutorials/dto/{id}"
         [HttpPut("dto/{id}")]
-        public ActionResult UpdateTutorialDto(int id, TutorialUpdateDto tutorialUpdateDto){
+        public ActionResult UpdateTutorialDto(Guid id, TutorialUpdateDto tutorialUpdateDto){
             //check if resource exist
             var tutorialModelFromRepo = _tutorialRepository.GetTutorialById(id);
 
@@ -133,7 +133,7 @@ namespace Tutorial_API.Controllers{
         // install packages: (1) Microsoft.AspNetCore.JsonPatch, (2) Se/Deserialize json - Microsoft.AspNetCore.Mvc.NewtonsoftJso
         // PATCH - "api/tutorials/dto/{id}"
         [HttpPatch("dto/{id}")]
-        public ActionResult PartialTutorialUpdate(int id, JsonPatchDocument<TutorialUpdateDto> patchDoc){
+        public ActionResult PartialTutorialUpdate(Guid id, JsonPatchDocument<TutorialUpdateDto> patchDoc){
             //check if resource exist
             var tutorialModelFromRepo = _tutorialRepository.GetTutorialById(id);
             if(tutorialModelFromRepo == null){
@@ -159,7 +159,7 @@ namespace Tutorial_API.Controllers{
         // no need for a dto
         //Delete  - "api/tutorials/{id}"
         [HttpDelete("{id}")]
-        public ActionResult DeleteTutorial(int id){
+        public ActionResult DeleteTutorial(Guid id){
              //check if resource exist
             var tutorialModelFromRepo = _tutorialRepository.GetTutorialById(id);
             if(tutorialModelFromRepo == null){
