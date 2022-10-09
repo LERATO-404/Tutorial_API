@@ -30,9 +30,6 @@ namespace Tutorial_API.Controllers{
             _mapper = mapper;
             _logger = logger;
         }
-
-
-
         
         //Get - read all resources & Success = 200 (OK) & Failure = 400 (Bad)/404 (Not found)
         //[Route("api/tutorials")]
@@ -55,125 +52,17 @@ namespace Tutorial_API.Controllers{
             
         }
 
-        //Dto implementation using AutoMapper
-        //Get /api/tutorials/dto
-        [HttpGet("dto")]
-        public ActionResult<IEnumerable<TutorialReadDto>> GetAllTutorialsDto(){
-            
-            var tutorialItems = _tutorialRepository.GetAllTutorials();
-            return Ok(_mapper.Map<IEnumerable<TutorialReadDto>>(tutorialItems));
-        }
 
-
-        //Get /api/tutorials/dto/{id}
-        [HttpGet("dto/{id}", Name ="GetTutorialByIdDto")]
-        public ActionResult <TutorialReadDto> GetTutorialByIdDto(Guid id){
-            var tutorialItem = _tutorialRepository.GetTutorialById(id);
-            if(tutorialItem != null){
-                return Ok(_mapper.Map<TutorialReadDto>(tutorialItem));
-            }
-            return NotFound();
-            
-        }
-
-        //Post - Create a new resource & Success = 201 (Created) & Failure = 400 (Bad)/404 (Not found)
         // POST - /api/tutorials/dto
-        [HttpPost("dto")]
-        public ActionResult <TutorialCreateDto> CreateTutorialDto(TutorialCreateDto tutorialCreateDto){
-            //use mapper to create model in the profiles
-
-            var tutorModel = _mapper.Map<Tutorial>(tutorialCreateDto);
+        [HttpPost]
+        public ActionResult<Tutorial> CreateTutorial(Tutorial tutorialCreate){
+            var tutorModel = _mapper.Map<Tutorial>(tutorialCreate);
             _tutorialRepository.CreateTutorial(tutorModel);
 
-            //without SaveChange the db is not updated
             _tutorialRepository.SaveChanges();
-
-            //return read dto without platform
-            var tutorialReadDto = _mapper.Map<TutorialReadDto>(tutorModel);
-
-            //return the body with platform 
-            //return Ok(tutorModel);
-
-            //return the body without platform 
-            //return Ok(tutorialReadDto);
-
-            //to return the correct status code and the URL Location Header in PostMan
-            // CreatedAtRoute(string routeName, string routeValue, string content)
-            return CreatedAtRoute(nameof(GetTutorialByIdDto), new {Id = tutorialReadDto.Id }, tutorialReadDto);
-
+            var tutorialRead = _mapper.Map<Tutorial>(tutorModel);
+            return CreatedAtRoute(nameof(GetAllTutorials), new {Id = tutorialCreate.Id }, tutorialRead);
         }
 
-        //Put - Update an existing & Success = 204 (No content) & Failure = 400 (Bad)/404 (Not found)
-        //Update - need to supply the entire object, inefficent (error prone)
-        //PUT -"api/tutorials/dto/{id}"
-        [HttpPut("dto/{id}")]
-        public ActionResult UpdateTutorialDto(Guid id, TutorialUpdateDto tutorialUpdateDto){
-            //check if resource exist
-            var tutorialModelFromRepo = _tutorialRepository.GetTutorialById(id);
-
-            if(tutorialModelFromRepo == null){
-                return NotFound();
-            }
-            //otherwise update using an auto mapper create a map from your profiles
-            //updates the model - tutorialModelFromRepo and tracked in the dbContext
-            _mapper.Map(tutorialUpdateDto, tutorialModelFromRepo);
-            _tutorialRepository.UpdateTutorial(tutorialModelFromRepo);
-            //save to the db in line  - _mapper.Map(tutorialUpdateDto, tutorialModelFromRepo);
-            _tutorialRepository.SaveChanges();
-
-            return NoContent();
-
-        }
-
-        
-        //Patch - update partial resource & Success = 204 & Failure = 400 (Bad)/404 (Not found)
-        // more favourable to PUT as you can only update what u want
-        // no separate dto like PUT
-        //JSON Patch standard - Add, Remove, Replace, Copy, Move, Test
-        // install packages: (1) Microsoft.AspNetCore.JsonPatch, (2) Se/Deserialize json - Microsoft.AspNetCore.Mvc.NewtonsoftJso
-        // PATCH - "api/tutorials/dto/{id}"
-        [HttpPatch("dto/{id}")]
-        public ActionResult PartialTutorialUpdate(Guid id, JsonPatchDocument<TutorialUpdateDto> patchDoc){
-            //check if resource exist
-            var tutorialModelFromRepo = _tutorialRepository.GetTutorialById(id);
-            if(tutorialModelFromRepo == null){
-                return NotFound();
-            }
-
-            // a new update Dto with data from the repo from profiles - CreateMap<Tutor, TutorialUpdateDto>();
-            var tutorialToPatch = _mapper.Map<TutorialUpdateDto>(tutorialModelFromRepo);
-
-            //make use of the patch doc, ModelState - ensure validations from package 2 installed newton...
-            patchDoc.ApplyTo(tutorialToPatch, ModelState);
-            if(!TryValidateModel(tutorialToPatch)){
-                return ValidationProblem(ModelState);
-            }
-            _mapper.Map(tutorialToPatch, tutorialModelFromRepo);
-            _tutorialRepository.SaveChanges();
-            return NoContent();
-        }
-
-
-        
-        //Delete - delete a sigle resource & Success = 200/204 & Failure = 400 (Bad)/404 (Not found)
-        // no need for a dto
-        //Delete  - "api/tutorials/{id}"
-        [HttpDelete("{id}")]
-        public ActionResult DeleteTutorial(Guid id){
-             //check if resource exist
-            var tutorialModelFromRepo = _tutorialRepository.GetTutorialById(id);
-            if(tutorialModelFromRepo == null){
-                return NotFound();
-            }
-            _tutorialRepository.DeleteTutorial(tutorialModelFromRepo);
-            _tutorialRepository.SaveChanges();
-            return NoContent();
-        }
-
-        /*
-        //Delete - delete a coolection of resources & Success = 200/204 & Failure = 400 (Bad)/404 (Not found)
-        [HttpDelete]
-        [Route("api/tutorials/{id}")]
-        */
     }
 }
